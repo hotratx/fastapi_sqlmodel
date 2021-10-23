@@ -1,5 +1,7 @@
-from fastapi_sqlmodel import __version__
+from starlette.testclient import TestClient
 
 
-def test_version():
-    assert __version__ == '0.1.0'
+def test_ping(test_app):
+    response = test_app.get("/ping")
+    assert response.status_code == 200
+    assert response.json() == {"ping": "ipong!"}
