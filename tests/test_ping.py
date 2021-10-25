@@ -30,3 +30,17 @@ def test_get_song(test_app, monkeypatch):
 
     assert response.status_code == 200
     assert response.json() == test_response_payload
+
+def test_read_song_incorrect_id(test_app, monkeypatch):
+    async def mock_get(id):
+        return None
+
+    monkeypatch.setattr(SongDB, "get", mock_get)
+
+    response = test_app.get("/songs/999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Not Found"
+
+def test_create_songs_invalid_json(test_app):
+    response = test_app.post("/songs", data=json.dumps({"title": "something"}))
+    assert response.status_code == 422

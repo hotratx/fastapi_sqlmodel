@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 
-from app.api import ping, song
+from app.api.routers import ping, song, auth
 
 app = FastAPI()
 
 app.include_router(ping.router)
 app.include_router(song.router)
+app.include_router(auth.router, prefix="/auth")
 
     #result = await session.execute(select(Song))
     #songs = result.scalars().all()
