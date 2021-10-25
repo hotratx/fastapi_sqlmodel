@@ -19,7 +19,7 @@ class RepositoryUser:
         users = resp.scalars().all()
         return users
 
-    async def get_user(self, email: str):
+    async def user_by_email(self, email: str):
         resp = await self.session.execute(select(User).where(User.email == email))
         user = resp.scalars().first()
         return user
