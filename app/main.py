@@ -1,25 +1,18 @@
-from fastapi import Depends, FastAPI, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import FastAPI
 
-from app.db import get_session
-from app.api.models.models import Song, SongCreate
-from app.api import ping
-from app.api.crud.post import Post
+from app.api import ping, song
 
 app = FastAPI()
 
 app.include_router(ping.router)
+app.include_router(song.router)
 
-@app.get("/songs", response_model=list[Song])
-async def get_songs(session: AsyncSession = Depends(get_session)):
-    response = await Post(session).get()
-    return response
     #result = await session.execute(select(Song))
     #songs = result.scalars().all()
     #return [Song(name=song.name, artist=song.artist, year=song.year, id=song.id) for song in songs]
 
+@app.post("/vai")
+async def add_test():
+    return {'foi': 18}
 
-@app.post("/songs", status_code=status.HTTP_201_CREATED)
-async def add_song(song: SongCreate, session: AsyncSession = Depends(get_session)):
-    response = await Post(session).create(song)
-    return response
+
