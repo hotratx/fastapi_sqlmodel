@@ -12,6 +12,7 @@ asyncpg = "^0.24.0"
 fastapi = {extras = ["all"], version = "^0.70.0"}
 alembic = "^1.7.4"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

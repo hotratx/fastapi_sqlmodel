@@ -1,3 +1,4 @@
+from typing import Type
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,7 +20,7 @@ class RepositoryUser:
         users = resp.scalars().all()
         return users
 
-    async def user_by_email(self, email: str):
+    async def user_by_email(self, email: str) -> User:
         resp = await self.session.execute(select(User).where(User.email == email))
         user = resp.scalars().first()
         return user

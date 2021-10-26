@@ -17,6 +17,10 @@ class UserCreate(UserBase):
     password: str
 
 
-class LoginUser(SQLModel):
+class LoginData(SQLModel):
     email: str
     password: str
+
+class LoginSuccess(SQLModel):
+    user_base: UserBase
+    access_token: str

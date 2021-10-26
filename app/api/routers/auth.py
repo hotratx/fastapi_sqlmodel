@@ -3,9 +3,11 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_session
-from app.api.models.user import UserBase, UserCreate, LoginUser
+from app.api.models.user import UserBase, UserCreate, LoginData, LoginSuccess
 from app.api.crud.auth import RepositoryUser
-from app.infra.providers.hash_provider import gerar_hash
+from app.infra.providers.hash_provider import gerar_hash, verificar_hash
+from app.infra.providers import token_provider 
+from app.api.routers.auth_utils import obter_usuario_logado
 
 router = APIRouter()
 
@@ -36,15 +38,22 @@ async def get_user(email: str, session: AsyncSession = Depends(get_session)):
                 detail="Usuário não cadastrado")
     return user
 
-@router.post("/login")
-async def login_user(user: LoginUser, session: AsyncSession = Depends(get_session)):
+@router.post("/login", response_model=LoginSuccess)
+async def login_user(user: LoginData, session: AsyncSession = Depends(get_session)):
     user_exist = await RepositoryUser(session).user_by_email(user.email) 
     if not user_exist:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Usuário não existe.")
 
-    if not user_exist:
+    password_valid = verificar_hash(user.password, user_exist.password)
+    if not password_valid:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Usuário não existe.")
+                detail=f"Senha incorreta.")
+    
+    # Gerar token
+    token = token_provider.create_access_token({"sub": user_exist.email})
+    return LoginSuccess(user_base=user_exist, access_token=token)
 
-
+@router.get("/me", response_model=UserBase)
+def me(user: UserBase = Depends(obter_usuario_logado)):
+    return user

@@ -15,5 +15,3 @@ app.include_router(auth.router, prefix="/auth")
 @app.post("/vai")
 async def add_test():
     return {'foi': 18}
-
-
